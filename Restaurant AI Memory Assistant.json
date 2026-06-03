@@ -1,0 +1,151 @@
+{
+  "name": "Restaurant AI Memory Assistant",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "276f6e07-0c73-435e-8292-49f11a08f255",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "restaurant-name",
+              "name": "restaurant",
+              "value": "Truffles Koramangala Bangalore",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "d16d7aba-b91c-4856-9e14-bb7f77eea7a7",
+      "name": "Restaurant Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://maps.googleapis.com/maps/api/place/textsearch/json?query={{ encodeURIComponent($json.restaurant) }}&key={{$env.GOOGLE_MAPS_API_KEY}}",
+        "options": {}
+      },
+      "id": "c2d2f9fc-b075-407c-89f2-8bc1b16bbd97",
+      "name": "Google Places Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "text": "Analyze this restaurant data and reviews. Return: must-order dishes, dishes to avoid, vibe, best visiting time, price estimate, and concise summary. Data: {{$json.results}}",
+        "batching": {}
+      },
+      "id": "52d15116-b3cb-468f-a33a-5dafd6d45bee",
+      "name": "Restaurant Intelligence",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        688,
+        144
+      ]
+    },
+    {
+      "parameters": {
+        "model": "={{\"gpt-4.1-mini\"}}",
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "5607ea41-0e84-4c91-9c77-0a1a457c0ee7",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        704,
+        384
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Restaurant Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restaurant Input": {
+      "main": [
+        [
+          {
+            "node": "Google Places Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Places Search": {
+      "main": [
+        [
+          {
+            "node": "Restaurant Intelligence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Restaurant Intelligence",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "33562e89-8c3a-4836-874b-e88bcde57dca",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "103a98b4489fc93ac9178f3fb5c83c493582ea17bb773b16b78328d8e1537654"
+  },
+  "id": "XMVVAsh6sgRSMkRI",
+  "tags": []
+}
