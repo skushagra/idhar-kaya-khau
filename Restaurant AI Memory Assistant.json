@@ -19,7 +19,7 @@
             {
               "id": "restaurant-name",
               "name": "restaurant",
-              "value": "Truffles Koramangala Bangalore",
+              "value": "Hole in the wall kormangla bangalore",
               "type": "string"
             }
           ]
@@ -38,7 +38,7 @@
     },
     {
       "parameters": {
-        "url": "=https://maps.googleapis.com/maps/api/place/textsearch/json?query={{ encodeURIComponent($json.restaurant) }}&key={{$env.GOOGLE_MAPS_API_KEY}}",
+        "url": "=https://maps.googleapis.com/maps/api/place/textsearch/json?query={{ encodeURIComponent($json.restaurant) }}&key={{GOOGLE_MAPS_API_KEY}}",
         "options": {}
       },
       "id": "c2d2f9fc-b075-407c-89f2-8bc1b16bbd97",
@@ -52,21 +52,11 @@
     },
     {
       "parameters": {
-        "text": "Analyze this restaurant data and reviews. Return: must-order dishes, dishes to avoid, vibe, best visiting time, price estimate, and concise summary. Data: {{$json.results}}",
-        "batching": {}
-      },
-      "id": "52d15116-b3cb-468f-a33a-5dafd6d45bee",
-      "name": "Restaurant Intelligence",
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.7,
-      "position": [
-        688,
-        144
-      ]
-    },
-    {
-      "parameters": {
-        "model": "={{\"gpt-4.1-mini\"}}",
+        "model": {
+          "__rl": true,
+          "value": "={{\"gpt-4.1\"}}",
+          "mode": ""
+        },
         "builtInTools": {},
         "options": {}
       },
@@ -85,6 +75,24 @@
           "__aiGatewayManaged": true
         }
       }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this restaurant.  Data: {{ JSON.stringify($json.results) }}  Return: - Must-order dishes - Dishes to avoid - Vibe - Best visiting time - Price estimate - Concise summary",
+        "messages": {
+          "messageValues": []
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        656,
+        112
+      ],
+      "id": "becb4211-0780-4c03-a2ef-3dd0d4dc8300",
+      "name": "Basic LLM Chain"
     }
   ],
   "pinData": {},
@@ -115,7 +123,7 @@
       "main": [
         [
           {
-            "node": "Restaurant Intelligence",
+            "node": "Basic LLM Chain",
             "type": "main",
             "index": 0
           }
@@ -126,7 +134,7 @@
       "ai_languageModel": [
         [
           {
-            "node": "Restaurant Intelligence",
+            "node": "Basic LLM Chain",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -140,7 +148,7 @@
     "binaryMode": "separate",
     "availableInMCP": true
   },
-  "versionId": "33562e89-8c3a-4836-874b-e88bcde57dca",
+  "versionId": "7de22f01-5615-4f65-9e80-af7d4fd67a01",
   "meta": {
     "aiBuilderAssisted": true,
     "builderVariant": "mcp",
