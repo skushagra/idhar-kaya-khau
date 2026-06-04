@@ -102,6 +102,12 @@ Outputs:
 
 ---
 
+# Output Sheet
+
+[View the live output Google Sheet](https://docs.google.com/spreadsheets/d/1CR52Dtz96bspwYD7p76e1TojNkYixJ11M5PmbcjleRM/edit?usp=sharing)
+
+---
+
 # Agentic Practices Demonstrated
 
 ## Clear Agent Roles
