@@ -12,7 +12,7 @@
       "typeVersion": 4.2,
       "position": [
         1680,
-        528
+        624
       ]
     },
     {
@@ -27,11 +27,12 @@
           "conditions": [
             {
               "id": "5f17b269-19b0-4839-a102-a87c1c6164ee",
-              "leftValue": "={{ $json.results[0].user_ratings_total }}",
-              "rightValue": 100,
+              "leftValue": "={{ $json.results[0].place_id }}",
+              "rightValue": null,
               "operator": {
-                "type": "number",
-                "operation": "gt"
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
               }
             }
           ],
@@ -43,7 +44,7 @@
       "typeVersion": 2.3,
       "position": [
         1904,
-        528
+        624
       ],
       "id": "a0432589-2150-4223-b45b-bc75f86fdca4",
       "name": "If"
@@ -57,8 +58,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2112,
-        752
+        2128,
+        720
       ],
       "id": "169a98aa-2362-41d6-934e-3c5d9746735e",
       "name": "Edit Fields"
@@ -80,8 +81,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2096,
-        288
+        2128,
+        528
       ],
       "id": "644a8525-94e6-4776-9e60-28f1ebf730af",
       "name": "Edit Fields3"
@@ -98,7 +99,7 @@
             },
             {
               "name": "key",
-              "value": ""
+              "value": "AIzaSyBJQGPBRW6UYUQth2_F8YsPejaBHMnffRo"
             }
           ]
         },
@@ -108,7 +109,7 @@
       "typeVersion": 4.4,
       "position": [
         2352,
-        288
+        528
       ],
       "id": "3477ce16-9921-4973-a7c5-104d3215e1e6",
       "name": "HTTP Request"
@@ -121,21 +122,22 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        3360,
-        624
+        2944,
+        640
       ],
       "id": "1dfb16ce-89f9-4d63-b192-a9976f78c558",
       "name": "Structured Output Parser"
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{\n  \"restaurant_name\": \"string\",\n  \"currently_open\": true,\n  \"opening_hours_summary\": \"string\",\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"price_level\": \"string\",\n  \"restaurant_type\": \"string\",\n  \"services\": \"string\",\n  \"best_time_to_visit\": \"string\",\n  \"ideal_customer\": \"string\",\n  \"strengths\": \"string\",\n  \"weaknesses\": \"string\",\n  \"summary\": \"string\"\n}"
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"restaurant_name\": {\n    \"type\": \"string\"\n  },\n  \"currently_open\": {\n    \"type\": \"boolean\"\n  },\n  \"opening_hours_summary\": {\n    \"type\": \"string\"\n  },\n  \"rating\": {\n    \"type\": \"number\"\n  },\n  \"total_reviews\": {\n    \"type\": \"number\"\n  },\n  \"price_level\": {\n    \"type\": \"string\"\n  },\n  \"restaurant_type\": {\n    \"type\": \"array\",\n    \"items\": {\n      \"type\": \"string\"\n    }\n  },\n  \"services\": {\n    \"type\": \"array\",\n    \"items\": {\n      \"type\": \"string\"\n    }\n  },\n  \"best_time_to_visit\": {\n    \"type\": \"string\"\n  },\n  \"ideal_customer\": {\n    \"type\": \"string\"\n  },\n  \"strengths\": {\n    \"type\": \"array\",\n    \"items\": {\n      \"type\": \"string\"\n    }\n  },\n  \"weaknesses\": {\n    \"type\": \"array\",\n    \"items\": {\n      \"type\": \"string\"\n    }\n  },\n  \"summary\": {\n    \"type\": \"string\"\n  }\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        3376,
-        208
+        2944,
+        240
       ],
       "id": "c8884a30-c6e0-47b9-8bf5-c8fb36876978",
       "name": "Structured Output Parser1"
@@ -149,7 +151,7 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        3744,
+        3152,
         224
       ],
       "id": "83390ad8-1226-4c4d-b699-e1df2f9f9ac4",
@@ -182,8 +184,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        2560,
-        288
+        2576,
+        528
       ],
       "id": "52a28df3-33b6-41d7-ad17-399857b177f9",
       "name": "If2"
@@ -197,8 +199,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        2768,
-        640
+        2864,
+        816
       ],
       "id": "6c2c085d-3c71-4490-9a76-b96449a7c107",
       "name": "Edit Fields4"
@@ -217,8 +219,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        3984,
-        416
+        3392,
+        448
       ],
       "id": "77284b37-f909-4a52-aec6-4b0ec00ccef8",
       "name": "OpenAI Chat Model2",
@@ -239,8 +241,8 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        3168,
-        448
+        2800,
+        416
       ],
       "id": "c49e3577-0690-4d80-bfa4-113f3bafe369",
       "name": "Review Agent",
@@ -249,14 +251,14 @@
     {
       "parameters": {
         "promptType": "define",
-        "text": "={{ JSON.stringify($json.result, null, 2) }}\n\nYou are a Restaurant Operations Intelligence Agent.\n\nAnalyze the restaurant metadata and generate factual operational insights.\n\nUse ONLY the provided data.\n\nReturn ONLY valid JSON.\n\nSchema:\n\n{\n  \"restaurant_name\": \"\",\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"recommendation_strength\": \"\",\n  \"currently_open\": false,\n  \"visit_now_status\": \"\",\n  \"opening_hours_summary\": \"\",\n  \"price_level\": \"\",\n  \"services\": [],\n  \"location_summary\": \"\",\n  \"restaurant_type\": [],\n  \"popular_for\": [],\n  \"operational_insights\": [],\n  \"customer_fit\": [],\n  \"summary\": \"\"\n}",
+        "text": "={{ JSON.stringify($json.result, null, 2) }}\n\nYou are a Restaurant Operations Intelligence Agent.\n\nAnalyze the restaurant metadata and generate factual operational insights.\n\nUse ONLY the provided data.\n\nReturn ONLY valid JSON.\n\nSchema:\n\n{\n  \"restaurant_name\": \"string\",\n  \"currently_open\": true,\n  \"opening_hours_summary\": \"string\",\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"price_level\": \"string\",\n  \"restaurant_type\": [],\n  \"services\": [],\n  \"best_time_to_visit\": \"string\",\n  \"ideal_customer\": \"string\",\n  \"strengths\": [],\n  \"weaknesses\": [],\n  \"summary\": \"string\"\n}",
         "hasOutputParser": true,
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        3168,
+        2800,
         16
       ],
       "id": "bd23912e-c2a3-4e5a-ba8f-e0da1625506d",
@@ -272,7 +274,7 @@
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
       "position": [
-        4064,
+        3376,
         224
       ],
       "id": "6a38f0d1-f5cc-4845-96a3-eff84a23d591",
@@ -285,8 +287,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        4288,
-        416
+        3520,
+        448
       ],
       "id": "aa9dce5e-7901-474d-8441-ae7e8a221991",
       "name": "Structured Output Parser2"
@@ -440,7 +442,7 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        4560,
+        3728,
         224
       ],
       "id": "ae7b1d99-390c-400b-b1de-f4cc63a67d5c",
@@ -462,7 +464,7 @@
       "typeVersion": 1.4,
       "position": [
         1456,
-        528
+        624
       ],
       "id": "01d13ebc-7c8b-41e8-ad2d-3749d129b776",
       "name": "When chat message received",
@@ -470,13 +472,14 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-3.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        3104,
-        192
+        2624,
+        224
       ],
       "id": "01e1d417-a721-4623-9afc-2ad53888d8ad",
       "name": "Google Gemini Chat Model",
@@ -489,13 +492,14 @@
     },
     {
       "parameters": {
+        "modelName": "models/gemini-3.5-flash",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.1,
       "position": [
-        3104,
-        624
+        2816,
+        640
       ],
       "id": "92accb0c-f75f-4de5-89f8-4b7bd05786fa",
       "name": "Google Gemini Chat Model1",
@@ -710,7 +714,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "42b7d9f5-0b70-45b9-889a-fd1267e95a3c",
+  "versionId": "6d439f6e-6aa0-4cb6-b1cf-96cccd78d1a7",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "5613c7f2e3e34bb50ea9702f64341919ae273f34fe55a6569d0ceacbce3e8f1d"
