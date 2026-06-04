@@ -2,113 +2,676 @@
   "name": "Restaurant AI Memory Assistant",
   "nodes": [
     {
-      "parameters": {},
-      "id": "276f6e07-0c73-435e-8292-49f11a08f255",
-      "name": "Manual Trigger",
-      "type": "n8n-nodes-base.manualTrigger",
-      "typeVersion": 1,
+      "parameters": {
+        "url": "=https://maps.googleapis.com/maps/api/place/textsearch/json?query={{ $json.chatInput }}&key=",
+        "options": {}
+      },
+      "id": "ee7829d6-48f6-456f-99ac-130595c92e0e",
+      "name": "Google Places Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
       "position": [
-        0,
-        112
+        1680,
+        528
       ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5f17b269-19b0-4839-a102-a87c1c6164ee",
+              "leftValue": "={{ $json.results[0].user_ratings_total }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1904,
+        528
+      ],
+      "id": "a0432589-2150-4223-b45b-bc75f86fdca4",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"status\": \"REJECTED\",\n  \"reason\": \"Place not found!\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        752
+      ],
+      "id": "169a98aa-2362-41d6-934e-3c5d9746735e",
+      "name": "Edit Fields"
     },
     {
       "parameters": {
         "assignments": {
           "assignments": [
             {
-              "id": "restaurant-name",
-              "name": "restaurant",
-              "value": "Hole in the wall kormangla bangalore",
+              "id": "2a3a4883-abe0-4e9d-b0e7-03b1165154d5",
+              "name": "place_id",
+              "value": "={{ $json.results[0].place_id }}",
               "type": "string"
             }
           ]
         },
-        "includeOtherFields": true,
         "options": {}
       },
-      "id": "d16d7aba-b91c-4856-9e14-bb7f77eea7a7",
-      "name": "Restaurant Input",
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        224,
-        112
-      ]
+        2096,
+        288
+      ],
+      "id": "644a8525-94e6-4776-9e60-28f1ebf730af",
+      "name": "Edit Fields3"
     },
     {
       "parameters": {
-        "url": "=https://maps.googleapis.com/maps/api/place/textsearch/json?query={{ encodeURIComponent($json.restaurant) }}&key={{GOOGLE_MAPS_API_KEY}}",
+        "url": "https://maps.googleapis.com/maps/api/place/details/json",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "=placeid",
+              "value": "={{ $json.place_id }}"
+            },
+            {
+              "name": "key",
+              "value": ""
+            }
+          ]
+        },
         "options": {}
       },
-      "id": "c2d2f9fc-b075-407c-89f2-8bc1b16bbd97",
-      "name": "Google Places Search",
       "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
+      "typeVersion": 4.4,
       "position": [
-        448,
-        112
-      ]
+        2352,
+        288
+      ],
+      "id": "3477ce16-9921-4973-a7c5-104d3215e1e6",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"restaurant_name\": \"string\",\n  \"currently_open\": true,\n  \"opening_hours_summary\": \"string\",\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"price_level\": \"string\",\n  \"restaurant_type\": [\"string\"],\n  \"services\": [\"string\"],\n  \"best_time_to_visit\": \"string\",\n  \"ideal_customer\": [\"string\"],\n  \"strengths\": [\"string\"],\n  \"weaknesses\": [\"string\"],\n  \"summary\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3360,
+        624
+      ],
+      "id": "1dfb16ce-89f9-4d63-b192-a9976f78c558",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"restaurant_name\": \"string\",\n  \"currently_open\": true,\n  \"opening_hours_summary\": \"string\",\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"price_level\": \"string\",\n  \"restaurant_type\": \"string\",\n  \"services\": \"string\",\n  \"best_time_to_visit\": \"string\",\n  \"ideal_customer\": \"string\",\n  \"strengths\": \"string\",\n  \"weaknesses\": \"string\",\n  \"summary\": \"string\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        3376,
+        208
+      ],
+      "id": "c8884a30-c6e0-47b9-8bf5-c8fb36876978",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        3744,
+        224
+      ],
+      "id": "83390ad8-1226-4c4d-b699-e1df2f9f9ac4",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "49eaffee-2eb5-4d28-a33c-5cdaa1932a39",
+              "leftValue": "={{ $json.result.user_ratings_total }}",
+              "rightValue": 100,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        2560,
+        288
+      ],
+      "id": "52a28df3-33b6-41d7-ad17-399857b177f9",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"status\": \"REJECTED\",\n  \"reason\": \"Not enough ratings available for reliable analysis\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2768,
+        640
+      ],
+      "id": "6c2c085d-3c71-4490-9a76-b96449a7c107",
+      "name": "Edit Fields4"
     },
     {
       "parameters": {
         "model": {
           "__rl": true,
-          "value": "={{\"gpt-4.1\"}}",
-          "mode": ""
+          "value": "gpt-4.1-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1-mini"
         },
         "builtInTools": {},
         "options": {}
       },
-      "id": "5607ea41-0e84-4c91-9c77-0a1a457c0ee7",
-      "name": "OpenAI Model",
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [
-        704,
-        384
+        3984,
+        416
       ],
+      "id": "77284b37-f909-4a52-aec6-4b0ec00ccef8",
+      "name": "OpenAI Chat Model2",
       "credentials": {
         "openAiApi": {
-          "id": null,
-          "name": "",
-          "__aiGatewayManaged": true
+          "id": "pxh1EE608ryEKywK",
+          "name": "n8n free OpenAI API credits"
         }
       }
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Analyze this restaurant.  Data: {{ JSON.stringify($json.results) }}  Return: - Must-order dishes - Dishes to avoid - Vibe - Best visiting time - Price estimate - Concise summary",
-        "messages": {
-          "messageValues": []
-        },
-        "batching": {}
+        "text": "=You are a Restaurant Review Intelligence Agent.\n\nAnalyze the customer reviews and extract:\n\n1. Must-try dishes mentioned positively multiple times\n2. Dishes with mixed or negative feedback\n3. Positive themes\n4. Negative themes\n5. Service observations\n6. Crowd observations\n\nRules:\n- Use only information present in the reviews.\n- Do not invent dishes or complaints.\n- If something is not mentioned, return an empty array.\n- Return ONLY valid JSON.\n- For multi-value fields, return values separated by semicolons.\nExample:\n\"services\": \"Dine-in; Delivery; Takeout\"\nOutput Schema:\n\n{\n  \"must_try_dishes\": [],\n  \"mixed_feedback_dishes\": [],\n  \"positive_themes\": [],\n  \"negative_themes\": [],\n  \"service_observations\": [],\n  \"crowd_observations\": [],\n  \"summary\": \"\"\n}\n\nReviews:\n{{ JSON.stringify($json.result.reviews) }}",
+        "hasOutputParser": true,
+        "options": {}
       },
-      "type": "@n8n/n8n-nodes-langchain.chainLlm",
-      "typeVersion": 1.9,
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
       "position": [
-        656,
-        112
+        3168,
+        448
       ],
-      "id": "becb4211-0780-4c03-a2ef-3dd0d4dc8300",
-      "name": "Basic LLM Chain"
+      "id": "c49e3577-0690-4d80-bfa4-113f3bafe369",
+      "name": "Review Agent",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ JSON.stringify($json.result, null, 2) }}\n\nYou are a Restaurant Operations Intelligence Agent.\n\nAnalyze the restaurant metadata and generate factual operational insights.\n\nUse ONLY the provided data.\n\nReturn ONLY valid JSON.\n\nSchema:\n\n{\n  \"restaurant_name\": \"\",\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"recommendation_strength\": \"\",\n  \"currently_open\": false,\n  \"visit_now_status\": \"\",\n  \"opening_hours_summary\": \"\",\n  \"price_level\": \"\",\n  \"services\": [],\n  \"location_summary\": \"\",\n  \"restaurant_type\": [],\n  \"popular_for\": [],\n  \"operational_insights\": [],\n  \"customer_fit\": [],\n  \"summary\": \"\"\n}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        3168,
+        16
+      ],
+      "id": "bd23912e-c2a3-4e5a-ba8f-e0da1625506d",
+      "name": "Insight Agent"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a Restaurant Recommendation Agent.\n\nYour responsibility is to make the final recommendation using the provided restaurant intelligence.\n\nDecision Framework:\n\nPositive Signals:\n- Rating >= 4.0\n- Review count > 1000\n- Strong recommendation strength\n- Multiple must-try dishes\n- Positive themes exceed negative themes\n- Restaurant currently open\n\nNegative Signals:\n- Significant service complaints\n- Multiple negative themes\n- Mixed feedback on popular dishes\n- Restaurant currently closed\n\nScoring Rules:\n\nMatch Score:\n0-100\n\nConfidence:\n0-100\n\nRecommendation Categories:\n- Highly Recommended\n- Recommended\n- Consider\n- Not Recommended\n\n{\n  \"restaurant_name\": \"\",\n  \"recommendation\": \"\",\n  \"visit_now\": false,\n  \"match_score\": 0,\n  \"confidence\": 0,\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"price_level\": \"\",\n  \"currently_open\": false,\n  \"must_try_dishes\": [],\n  \"avoid_dishes\": [],\n  \"top_strengths\": [],\n  \"top_risks\": [],\n  \"best_for\": [],\n  \"best_visit_time\": \"\",\n  \"wait_expected\": \"\",\n  \"parking\": \"\",\n  \"summary_tag\": \"\"\n}\n\nRestaurant Intelligence:\n\n{{ JSON.stringify($json.output, null, 2) }}",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        4064,
+        224
+      ],
+      "id": "6a38f0d1-f5cc-4845-96a3-eff84a23d591",
+      "name": "Reccomendation Agent"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"restaurant_name\": \"\",\n  \"recommendation\": \"\",\n  \"visit_now\": true,\n  \"match_score\": 0,\n  \"confidence\": 0,\n  \"rating\": 0,\n  \"total_reviews\": 0,\n  \"price_level\": \"\",\n  \"currently_open\": true,\n  \"must_try_dishes\": [],\n  \"avoid_dishes\": [],\n  \"top_strengths\": [],\n  \"top_risks\": [],\n  \"best_for\": [],\n  \"best_visit_time\": \"\",\n  \"wait_expected\": \"\",\n  \"parking\": \"\",\n  \"summary_tag\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        4288,
+        416
+      ],
+      "id": "aa9dce5e-7901-474d-8441-ae7e8a221991",
+      "name": "Structured Output Parser2"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1CR52Dtz96bspwYD7p76e1TojNkYixJ11M5PmbcjleRM",
+          "mode": "list",
+          "cachedResultName": "Restaurant Reccomendations",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CR52Dtz96bspwYD7p76e1TojNkYixJ11M5PmbcjleRM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1CR52Dtz96bspwYD7p76e1TojNkYixJ11M5PmbcjleRM/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Restaurant": "={{ $json.output.restaurant_name }}",
+            "Rating": "={{ $json.output.rating }}",
+            "Recommendation": "={{ $json.output.recommendation }}",
+            "Score": "={{ $json.output.match_score }}",
+            "Must Try Dishes": "={{ '• ' + $json.output.must_try_dishes.join('\\n• ') }}",
+            "Avoid Dishes": "={{ '• ' + $json.output.avoid_dishes.join('\\n• ') }}",
+            "Strengths ": "={{ '• ' + $json.output.top_strengths.join('\\n• ') }}",
+            "Risks": "={{ '• ' + $json.output.top_risks.join('\\n• ') }}",
+            "Best for": "={{ '• ' + $json.output.best_for.join('\\n• ') }}",
+            "Parking": "={{ $json.output.parking }}",
+            "Best Time to Vistit": "={{ $json.output.best_visit_time }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Restaurant",
+              "displayName": "Restaurant",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Rating",
+              "displayName": "Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Recommendation",
+              "displayName": "Recommendation",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Must Try Dishes",
+              "displayName": "Must Try Dishes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Avoid Dishes",
+              "displayName": "Avoid Dishes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Strengths ",
+              "displayName": "Strengths ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Risks",
+              "displayName": "Risks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Best for",
+              "displayName": "Best for",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Parking",
+              "displayName": "Parking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Best Time to Vistit",
+              "displayName": "Best Time to Vistit",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4560,
+        224
+      ],
+      "id": "ae7b1d99-390c-400b-b1de-f4cc63a67d5c",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "jrIiHnKaVGdBOHh5",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Hi there! 👋\nWhere are you going to eat next?",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        1456,
+        528
+      ],
+      "id": "01d13ebc-7c8b-41e8-ad2d-3749d129b776",
+      "name": "When chat message received",
+      "webhookId": "bec259dc-6357-44a0-8cb5-26cf2df6f2ee"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        3104,
+        192
+      ],
+      "id": "01e1d417-a721-4623-9afc-2ad53888d8ad",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4ZyVJIpl2Gkw7KKc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        3104,
+        624
+      ],
+      "id": "92accb0c-f75f-4de5-89f8-4b7bd05786fa",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4ZyVJIpl2Gkw7KKc",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
     }
   ],
   "pinData": {},
   "connections": {
-    "Manual Trigger": {
+    "Google Places Search": {
       "main": [
         [
           {
-            "node": "Restaurant Input",
+            "node": "If",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Restaurant Input": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Review Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Insight Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Reccomendation Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Review Agent",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insight Agent",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model2": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Reccomendation Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Insight Agent": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser2": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Reccomendation Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reccomendation Agent": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
       "main": [
         [
           {
@@ -119,22 +682,22 @@
         ]
       ]
     },
-    "Google Places Search": {
-      "main": [
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
         [
           {
-            "node": "Basic LLM Chain",
-            "type": "main",
+            "node": "Insight Agent",
+            "type": "ai_languageModel",
             "index": 0
           }
         ]
       ]
     },
-    "OpenAI Model": {
+    "Google Gemini Chat Model1": {
       "ai_languageModel": [
         [
           {
-            "node": "Basic LLM Chain",
+            "node": "Review Agent",
             "type": "ai_languageModel",
             "index": 0
           }
@@ -145,15 +708,13 @@
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": true
+    "binaryMode": "separate"
   },
-  "versionId": "7de22f01-5615-4f65-9e80-af7d4fd67a01",
+  "versionId": "42b7d9f5-0b70-45b9-889a-fd1267e95a3c",
   "meta": {
-    "aiBuilderAssisted": true,
-    "builderVariant": "mcp",
-    "instanceId": "103a98b4489fc93ac9178f3fb5c83c493582ea17bb773b16b78328d8e1537654"
+    "templateCredsSetupCompleted": true,
+    "instanceId": "5613c7f2e3e34bb50ea9702f64341919ae273f34fe55a6569d0ceacbce3e8f1d"
   },
-  "id": "XMVVAsh6sgRSMkRI",
+  "id": "rrihf3HHeff6Evja",
   "tags": []
 }
